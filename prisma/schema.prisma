@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  passwordHash String
+  name         String?
+  timezone     String  @default("UTC")
+
+  // Time-of-day strings in 24h "HH:mm" format, evaluated against the user's timezone.
+  // - goalPostTime    → posts the "TODAY GOAL" list (every task planned for today)
+  // - workUpdateTime  → posts the "Work Updated" list (only completed tasks)
+  // endOfDayTime is kept for backward compat but is no longer used by the scheduler.
+  goalPostTime   String @default("09:00")
+  workUpdateTime String @default("18:00")
+  endOfDayTime   String @default("23:00")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks              Task[]
+  discordConnections DiscordConnection[]
+  reminderSchedule   ReminderSchedule?
+  postLogs           PostLog[]
+
+  @@map("users")
+}
+
+model Task {
+  id       String    @id @default(uuid())
+  userId   String
+  title    String
+  date     DateTime  @db.Date
+  doneAt   DateTime?
+  position Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("tasks")
+}
+
+model DiscordConnection {
+  id             String    @id @default(uuid())
+  userId         String
+  guildId        String
+  guildName      String
+  accessToken    String
+  refreshToken   String?
+  tokenExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channels DiscordChannel[]
+
+  @@unique([userId, guildId])
+  @@map("discord_connections")
+}
+
+model DiscordChannel {
+  id           String        @id @default(uuid())
+  connectionId String
+  channelId    String
+  channelName  String
+  enabled      Boolean       @default(true)
+  format       ChannelFormat @default(EMBED)
+
+  // Per-channel routing for the new posts. A channel can receive both, one, or neither.
+  // If both are false, the channel is effectively muted regardless of `enabled`.
+  postGoals   Boolean @default(true)
+  postUpdates Boolean @default(true)
+
+  lastPostedAt DateTime?
+  lastError    String?
+
+  // Incoming webhook (our app) so posts can use a custom Discord username.
+  webhookId    String?
+  webhookToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  connection DiscordConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, channelId])
+  @@map("discord_channels")
+}
+
+enum ChannelFormat {
+  EMBED
+  PLAIN
+  COMPACT
+}
+
+model ReminderSchedule {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  startTime       String  @default("09:00")
+  endTime         String  @default("21:00")
+  hourlyEnabled   Boolean @default(true)
+  endOfDayEnabled Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reminder_schedules")
+}
+
+model PostLog {
+  id           String   @id @default(uuid())
+  userId       String
+  date         DateTime @db.Date
+  postedAt     DateTime @default(now())
+  channelId    String?
+  channelName  String?
+  // 'goal' | 'work_update' | 'wrap' (legacy)
+  kind         String   @default("wrap")
+  status       String
+  errorCode    Int?
+  errorMessage String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("post_logs")
+}
