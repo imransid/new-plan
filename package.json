@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "DayPlan NestJS backend with CQRS, Prisma, PostgreSQL",
   "scripts": {
-    "build": "prisma generate && nest build",
-    "vercel-build": "prisma generate && nest build",
+     "build": "npx prisma generate && npx nest build",
     "start:prod": "node dist/main",
+    "vercel-build": "prisma generate && nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
