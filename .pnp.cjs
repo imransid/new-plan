@@ -40,7 +40,7 @@ const RAW_RUNTIME_STATE =
           ["@nestjs/schematics", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:10.2.3"],\
           ["@nestjs/swagger", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:7.4.2"],\
           ["@prisma/client", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:5.22.0"],\
-          ["@types/bcryptjs", "npm:2.4.6"],\
+          ["@types/bcryptjs", "npm:3.0.0"],\
           ["@types/express", "npm:5.0.6"],\
           ["@types/luxon", "npm:3.4.2"],\
           ["@types/node", "npm:20.17.6"],\
@@ -901,10 +901,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/bcryptjs", [\
-      ["npm:2.4.6", {\
-        "packageLocation": "../../../.yarn/berry/cache/@types-bcryptjs-npm-2.4.6-50588b8234-10c0.zip/node_modules/@types/bcryptjs/",\
+      ["npm:3.0.0", {\
+        "packageLocation": "../../../.yarn/berry/cache/@types-bcryptjs-npm-3.0.0-92809cae88-10c0.zip/node_modules/@types/bcryptjs/",\
         "packageDependencies": [\
-          ["@types/bcryptjs", "npm:2.4.6"]\
+          ["@types/bcryptjs", "npm:3.0.0"],\
+          ["bcryptjs", "npm:3.0.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -1661,6 +1662,13 @@ const RAW_RUNTIME_STATE =
           ["bcryptjs", "npm:2.4.3"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:3.0.3", {\
+        "packageLocation": "../../../.yarn/berry/cache/bcryptjs-npm-3.0.3-834b97d2ce-10c0.zip/node_modules/bcryptjs/",\
+        "packageDependencies": [\
+          ["bcryptjs", "npm:3.0.3"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["binary-extensions", [\
@@ -2208,7 +2216,7 @@ const RAW_RUNTIME_STATE =
           ["@nestjs/schematics", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:10.2.3"],\
           ["@nestjs/swagger", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:7.4.2"],\
           ["@prisma/client", "virtual:fede4b17e7f593657bce10340ccad6639a7d92f4a84ccde3e6a42aa5487ebfc279ccbd012e25473d2d429e088467c93c42a86fca199f3d4f8aecb8553be89f79#npm:5.22.0"],\
-          ["@types/bcryptjs", "npm:2.4.6"],\
+          ["@types/bcryptjs", "npm:3.0.0"],\
           ["@types/express", "npm:5.0.6"],\
           ["@types/luxon", "npm:3.4.2"],\
           ["@types/node", "npm:20.17.6"],\
