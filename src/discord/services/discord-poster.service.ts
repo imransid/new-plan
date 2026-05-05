@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import { utcNowJsDate, utcTodayStartForDb } from "../../common/utc-datetime";
-import { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../../prisma/prisma.service";
 import { DiscordApiService } from "./discord-api.service";
 import { MessageFormatterService } from "./message-formatter.service";
 

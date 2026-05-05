@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
-import { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../../prisma/prisma.service";
 import { AuthResponseDto } from "../dto/auth.dto";
 
 export class SignUpCommand implements ICommand {

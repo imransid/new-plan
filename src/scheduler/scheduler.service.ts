@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { DateTime } from 'luxon';
-import { PrismaService } from '../prisma/prisma.service';
-import { DiscordPosterService } from '../discord/services/discord-poster.service';
+import { Injectable, Logger } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { DateTime } from "luxon";
+import { PrismaService } from "../../prisma/prisma.service";
+import { DiscordPosterService } from "../discord/services/discord-poster.service";
 
 @Injectable()
 export class SchedulerService {
@@ -33,7 +33,7 @@ export class SchedulerService {
     if (users.length === 0) return;
 
     for (const user of users) {
-      const localTime = DateTime.now().setZone(user.timezone).toFormat('HH:mm');
+      const localTime = DateTime.now().setZone(user.timezone).toFormat("HH:mm");
 
       // Goal post — fires at user's configured goalPostTime
       if (localTime === user.goalPostTime) {

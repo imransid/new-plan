@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { ChannelFormat } from "@prisma/client";
+import { ChannelFormat } from "../../../prisma/generated/prisma/client";
 
 export class ChannelSelectionDto {
   @ApiProperty()

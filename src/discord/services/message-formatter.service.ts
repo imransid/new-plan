@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ChannelFormat, Task } from "@prisma/client";
+import { ChannelFormat, Task } from "../../../prisma/generated/prisma/client";
 import { utcNowIsoString } from "../../common/utc-datetime";
 
 export interface FormattedMessage {

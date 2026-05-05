@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { utcNowJsDate } from '../../common/utc-datetime';
-import { PrismaService } from '../../prisma/prisma.service';
-import { TaskResponseDto } from '../dto/task.dto';
-import { toTaskResponseDto } from '../task-response.mapper';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
+import { utcNowJsDate } from "../../common/utc-datetime";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { TaskResponseDto } from "../dto/task.dto";
+import { toTaskResponseDto } from "../task-response.mapper";
 
 export class ToggleTaskCommand implements ICommand {
   constructor(
@@ -14,7 +14,10 @@ export class ToggleTaskCommand implements ICommand {
 
 @Injectable()
 @CommandHandler(ToggleTaskCommand)
-export class ToggleTaskHandler implements ICommandHandler<ToggleTaskCommand, TaskResponseDto> {
+export class ToggleTaskHandler implements ICommandHandler<
+  ToggleTaskCommand,
+  TaskResponseDto
+> {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(cmd: ToggleTaskCommand): Promise<TaskResponseDto> {
@@ -22,7 +25,7 @@ export class ToggleTaskHandler implements ICommandHandler<ToggleTaskCommand, Tas
       where: { id: cmd.taskId, userId: cmd.userId },
     });
     if (!existing) {
-      throw new NotFoundException('Task not found');
+      throw new NotFoundException("Task not found");
     }
 
     const task = await this.prisma.task.update({

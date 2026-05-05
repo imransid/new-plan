@@ -16,11 +16,9 @@ import {
 import { Injectable } from "@nestjs/common";
 
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import {
-  CurrentUser,
-  AuthUser,
-} from "../common/decorators/current-user.decorator";
-import { PrismaService } from "../prisma/prisma.service";
+import { CurrentUser } from "../common/decorators/current-user.decorator";
+import type { AuthUser } from "../common/decorators/current-user.decorator";
+import { PrismaService } from "../../prisma/prisma.service";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 

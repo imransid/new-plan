@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { IQuery, IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService } from "../../../prisma/prisma.service";
 import { DiscordApiService } from "../services/discord-api.service";
 
 export class ListAvailableChannelsQuery implements IQuery {

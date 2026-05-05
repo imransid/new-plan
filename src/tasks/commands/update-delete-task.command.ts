@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { PrismaService } from '../../prisma/prisma.service';
-import { TaskResponseDto } from '../dto/task.dto';
-import { toTaskResponseDto } from '../task-response.mapper';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { TaskResponseDto } from "../dto/task.dto";
+import { toTaskResponseDto } from "../task-response.mapper";
 
 export class UpdateTaskCommand implements ICommand {
   constructor(
@@ -15,7 +15,10 @@ export class UpdateTaskCommand implements ICommand {
 
 @Injectable()
 @CommandHandler(UpdateTaskCommand)
-export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand, TaskResponseDto> {
+export class UpdateTaskHandler implements ICommandHandler<
+  UpdateTaskCommand,
+  TaskResponseDto
+> {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(cmd: UpdateTaskCommand): Promise<TaskResponseDto> {
@@ -23,7 +26,7 @@ export class UpdateTaskHandler implements ICommandHandler<UpdateTaskCommand, Tas
       where: { id: cmd.taskId, userId: cmd.userId },
     });
     if (!existing) {
-      throw new NotFoundException('Task not found');
+      throw new NotFoundException("Task not found");
     }
 
     const task = await this.prisma.task.update({
@@ -47,7 +50,10 @@ export class DeleteTaskCommand implements ICommand {
 
 @Injectable()
 @CommandHandler(DeleteTaskCommand)
-export class DeleteTaskHandler implements ICommandHandler<DeleteTaskCommand, void> {
+export class DeleteTaskHandler implements ICommandHandler<
+  DeleteTaskCommand,
+  void
+> {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(cmd: DeleteTaskCommand): Promise<void> {
@@ -55,7 +61,7 @@ export class DeleteTaskHandler implements ICommandHandler<DeleteTaskCommand, voi
       where: { id: cmd.taskId, userId: cmd.userId },
     });
     if (!existing) {
-      throw new NotFoundException('Task not found');
+      throw new NotFoundException("Task not found");
     }
     await this.prisma.task.delete({ where: { id: cmd.taskId } });
   }

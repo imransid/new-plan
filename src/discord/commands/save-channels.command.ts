@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
-import { ChannelFormat } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
+import { ChannelFormat } from "../../../prisma/generated/prisma/client";
+import { PrismaService } from "../../../prisma/prisma.service";
 
 export interface ChannelSelection {
   channelId: string;
