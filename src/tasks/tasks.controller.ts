@@ -25,6 +25,10 @@ import {
   DeleteTaskCommand,
 } from "./commands/update-delete-task.command";
 import {
+  RolloverTasksCommand,
+  RolloverResult,
+} from "./commands/rollover-tasks.command";
+import {
   GetTasksByDateQuery,
   GetTasksHistoryQuery,
 } from "./queries/get-tasks.query";
@@ -70,6 +74,18 @@ export class TasksController {
     return this.queryBus.execute(
       new GetTasksHistoryQuery(user.userId, from, to),
     );
+  }
+
+  /**
+   * Copy yesterday's incomplete tasks into today. Idempotent — safe for the
+   * mobile app to call on every cold start / day-rollover detection.
+   */
+  @Post("rollover")
+  @ApiOperation({
+    summary: "Carry over yesterday's incomplete tasks to today (idempotent)",
+  })
+  rollover(@CurrentUser() user: AuthUser): Promise<RolloverResult> {
+    return this.commandBus.execute(new RolloverTasksCommand(user.userId));
   }
 
   @Patch(":id/toggle")

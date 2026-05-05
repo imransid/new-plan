@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import {
   parseTaskDateFromApi,
-  utcTodayStartForDb,
+  localTaskDayStartForDb,
 } from "../../common/utc-datetime";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { TaskResponseDto } from "../dto/task.dto";
@@ -26,9 +26,21 @@ export class CreateTaskHandler implements ICommandHandler<
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(cmd: CreateTaskCommand): Promise<TaskResponseDto> {
-    const date = cmd.date
-      ? parseTaskDateFromApi(cmd.date)
-      : utcTodayStartForDb();
+    let date: Date;
+    if (cmd.date) {
+      date = parseTaskDateFromApi(cmd.date);
+    } else {
+      // No date passed → "today" must mean the user's calendar day, not UTC's.
+      // Otherwise a task created at 1am Dhaka silently lands on yesterday.
+      const user = await this.prisma.user.findUnique({
+        where: { id: cmd.userId },
+        select: { timezone: true },
+      });
+      if (!user) {
+        throw new NotFoundException("User not found");
+      }
+      date = localTaskDayStartForDb(user.timezone);
+    }
 
     const position =
       cmd.position ??

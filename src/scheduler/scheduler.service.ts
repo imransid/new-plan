@@ -27,13 +27,29 @@ export class SchedulerService {
   @Cron(CronExpression.EVERY_MINUTE)
   async runDuePosts() {
     const users = await this.prisma.user.findMany({
-      include: { reminderSchedule: true },
+      select: {
+        id: true,
+        email: true,
+        timezone: true,
+        goalPostTime: true,
+        workUpdateTime: true,
+      },
     });
 
     if (users.length === 0) return;
 
     for (const user of users) {
-      const localTime = DateTime.now().setZone(user.timezone).toFormat("HH:mm");
+      // Defensive: bad timezone strings (typos like "Asia/Dahka") used to make
+      // `setZone` invalid, then `toFormat("HH:mm")` returned "Invalid DateTime"
+      // and the comparison silently never matched. Skip and warn instead.
+      const local = DateTime.now().setZone(user.timezone);
+      if (!local.isValid) {
+        this.logger.warn(
+          `User ${user.email} has invalid timezone "${user.timezone}" — skipping`,
+        );
+        continue;
+      }
+      const localTime = local.toFormat("HH:mm");
 
       // Goal post — fires at user's configured goalPostTime
       if (localTime === user.goalPostTime) {

@@ -1,6 +1,13 @@
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
-import { Body, Controller, Get, Patch, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  UseGuards,
+  BadRequestException,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { IsBoolean, IsOptional, IsString, Matches } from "class-validator";
 import {
@@ -19,6 +26,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import type { AuthUser } from "../common/decorators/current-user.decorator";
 import { PrismaService } from "../../prisma/prisma.service";
+import { isValidIanaTimezone } from "../common/utc-datetime";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -83,6 +91,13 @@ class UpdateProfileCommand implements ICommand {
 class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {
   constructor(private readonly prisma: PrismaService) {}
   async execute(c: UpdateProfileCommand) {
+    // Validate timezone here rather than in the DTO so we can reuse the same
+    // Luxon check the scheduler uses — keeps "valid TZ" defined in one place.
+    if (c.dto.timezone && !isValidIanaTimezone(c.dto.timezone)) {
+      throw new BadRequestException(
+        `Invalid timezone "${c.dto.timezone}" — expected an IANA name like "Asia/Dhaka"`,
+      );
+    }
     return this.prisma.user.update({
       where: { id: c.userId },
       data: c.dto,

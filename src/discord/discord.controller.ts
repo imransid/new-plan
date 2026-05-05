@@ -5,20 +5,21 @@ import {
   HttpStatus,
   Post,
   Query,
-  Req,
   Res,
   UseGuards,
+  BadRequestException,
 } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import type { Response } from "express";
+import { IsIn, IsString } from "class-validator";
 
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-// import { CurrentUser, AuthUser } from '../common/decorators/current-user.decorator';
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import type { AuthUser } from "../common/decorators/current-user.decorator";
 import { DiscordApiService } from "./services/discord-api.service";
+import { DiscordPosterService } from "./services/discord-poster.service";
 import { StateService } from "./services/state.service";
 import { SaveChannelsDto } from "./dto/discord.dto";
 import { ConnectDiscordCommand } from "./commands/connect-discord.command";
@@ -28,6 +29,12 @@ import {
   GetUserConnectionsQuery,
 } from "./queries/list-channels.query";
 
+class TestPublishDto {
+  @IsString()
+  @IsIn(["goal", "work_update"])
+  kind!: "goal" | "work_update";
+}
+
 @ApiTags("Discord")
 @Controller()
 export class DiscordController {
@@ -35,6 +42,7 @@ export class DiscordController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly discordApi: DiscordApiService,
+    private readonly discordPoster: DiscordPosterService,
     private readonly stateService: StateService,
     private readonly config: ConfigService,
   ) {}
@@ -118,5 +126,28 @@ export class DiscordController {
   @ApiOperation({ summary: "Get all Discord connections for the user" })
   getConnections(@CurrentUser() user: AuthUser) {
     return this.queryBus.execute(new GetUserConnectionsQuery(user.userId));
+  }
+
+  /**
+   * On-demand publish so the mobile app (or curl) can sanity-check Discord
+   * delivery without waiting for the next scheduler tick. Returns the same
+   * `PostResult` shape the scheduler logs, so failures are visible in the
+   * response body — no need to dig through server logs.
+   */
+  @Post("discord/test-publish")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Publish a goal or work-update post immediately" })
+  async testPublish(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: TestPublishDto,
+  ) {
+    if (dto.kind === "goal") {
+      return this.discordPoster.postGoalList(user.userId);
+    }
+    if (dto.kind === "work_update") {
+      return this.discordPoster.postWorkUpdate(user.userId);
+    }
+    throw new BadRequestException("Unknown kind");
   }
 }

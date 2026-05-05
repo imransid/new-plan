@@ -1,6 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
-import { utcNowJsDate, utcTodayStartForDb } from "../../common/utc-datetime";
+import {
+  localTaskDayStartForDb,
+  utcNowJsDate,
+} from "../../common/utc-datetime";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { DiscordApiService } from "./discord-api.service";
 import { MessageFormatterService } from "./message-formatter.service";
@@ -27,21 +30,17 @@ export class DiscordPosterService {
     private readonly formatter: MessageFormatterService,
   ) {}
 
-  // ─── NEW: post the morning goal list ────────────────────────────────────
-  // Sends "TODAY GOAL" with every task planned for today, only to channels
-  // that have postGoals=true.
+  // ─── post the morning goal list ─────────────────────────────────────────
   async postGoalList(userId: string): Promise<PostResult> {
     return this.run(userId, "goal");
   }
 
-  // ─── NEW: post the work-update list ─────────────────────────────────────
-  // Sends "Work Updated (date)" with only completed tasks, only to channels
-  // that have postUpdates=true.
+  // ─── post the work-update list ──────────────────────────────────────────
   async postWorkUpdate(userId: string): Promise<PostResult> {
     return this.run(userId, "work_update");
   }
 
-  // ─── Existing daily wrap (kept for backward compat) ─────────────────────
+  // ─── existing daily wrap (kept for backward compat) ─────────────────────
   async postDailyWrap(userId: string): Promise<PostResult> {
     return this.run(userId, "wrap");
   }
@@ -50,13 +49,21 @@ export class DiscordPosterService {
   private async run(userId: string, kind: PostKind): Promise<PostResult> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, timezone: true },
     });
     if (!user) return { posted: 0, failed: 0, results: [] };
 
     const discordUsername = this.displayNameForDiscord(user);
 
-    const today = utcTodayStartForDb();
+    // ── BUGFIX ──────────────────────────────────────────────────────────
+    // Was: `utcTodayStartForDb()`. That's UTC's "today", which doesn't
+    // match the user's "today" for any non-UTC user. The scheduler fires
+    // in user-local time (`DateTime.now().setZone(user.timezone)`), so
+    // when the scheduler fires we'd query a different calendar day from
+    // the one the mobile app stored tasks under, and end up with zero
+    // tasks — the silent skip path below would then hide the failure
+    // entirely. Use the user's local calendar day instead.
+    const today = localTaskDayStartForDb(user.timezone);
 
     const tasks = await this.prisma.task.findMany({
       where: { userId, date: today },
@@ -74,7 +81,9 @@ export class DiscordPosterService {
     // but we skip work_update / wrap entirely.
     if (kind !== "goal" && payloadTasks.length === 0) {
       this.logger.log(
-        `Nothing to post for user ${userId} (${kind}) — skipping`,
+        `Nothing to post for user ${userId} (${kind}, day=${today
+          .toISOString()
+          .slice(0, 10)}) — skipping`,
       );
       return { posted: 0, failed: 0, results: [] };
     }
@@ -88,7 +97,27 @@ export class DiscordPosterService {
       },
     });
 
-    const dateLabel = DateTime.utc().toFormat("LLLL d");
+    if (
+      connections.length === 0 ||
+      connections.every((c) => c.channels.length === 0)
+    ) {
+      // Useful when debugging "nothing posted" — tells us in the log whether
+      // the cause was missing connection vs missing routing flag vs disabled.
+      this.logger.warn(
+        `No eligible channels for user ${userId} (${kind}). ` +
+          `connections=${connections.length}, ` +
+          `routing-matched-channels=${connections.reduce(
+            (n, c) => n + c.channels.length,
+            0,
+          )}`,
+      );
+    }
+
+    // Use the user's local-TZ "today" for the displayed date label too so the
+    // header reads e.g. "January 15" matching what the user sees on screen.
+    const dateLabel = DateTime.fromJSDate(today, { zone: "utc" }).toFormat(
+      "LLLL d",
+    );
     const results: PostResult["results"] = [];
 
     for (const conn of connections) {
