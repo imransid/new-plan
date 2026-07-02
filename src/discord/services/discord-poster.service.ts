@@ -8,7 +8,7 @@ import { PrismaService } from "../../../prisma/prisma.service";
 import { DiscordApiService } from "./discord-api.service";
 import { MessageFormatterService } from "./message-formatter.service";
 
-type PostKind = "goal" | "work_update" | "wrap";
+export type PostKind = "goal" | "work_update" | "wrap";
 
 export interface PostResult {
   posted: number;
@@ -43,6 +43,27 @@ export class DiscordPosterService {
   // ─── existing daily wrap (kept for backward compat) ─────────────────────
   async postDailyWrap(userId: string): Promise<PostResult> {
     return this.run(userId, "wrap");
+  }
+
+  /**
+   * Idempotency guard for the scheduler: has a post of this `kind` already
+   * succeeded for this user on their *local* calendar day? Used so the
+   * catch-up scheduler (which retries every tick until it succeeds) posts at
+   * most once per day, and so a duplicate external cron trigger never
+   * double-posts. A post counts as "done" once at least one channel delivered
+   * (recorded in `PostLog` with status "success").
+   */
+  async hasSuccessfulPostToday(
+    userId: string,
+    kind: PostKind,
+    timezone: string | null | undefined,
+  ): Promise<boolean> {
+    const day = localTaskDayStartForDb(timezone);
+    const existing = await this.prisma.postLog.findFirst({
+      where: { userId, kind, date: day, status: "success" },
+      select: { id: true },
+    });
+    return existing !== null;
   }
 
   // ─── Shared posting pipeline ────────────────────────────────────────────

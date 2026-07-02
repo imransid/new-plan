@@ -5,10 +5,10 @@ NestJS + CQRS + Prisma + PostgreSQL.
 ## Architecture
 
 - **CQRS** — every write goes through a Command, every read through a Query. Handlers live next to commands/queries.
-- **Prisma** — type-safe DB access. Schema is the source of truth (`prisma/schema.prisma`).
+- **Prisma** — type-safe DB access (Prisma 7, `prisma-client` generator + `@prisma/adapter-pg`). Schema is the source of truth (`prisma/schema/schema.prisma`); client is generated to `prisma/generated/`.
 - **JWT auth** — bearer token in `Authorization: Bearer ...` header.
 - **Discord bot** — single bot serves all users; each user authorizes it into their server.
-- **Cron** — runs every minute, posts daily wraps for users hitting their end-of-day time in their local timezone.
+- **Scheduler** — posts each user's "TODAY GOAL" / "Work Updated" once they reach their configured time in their local timezone. Driven by an in-process `@Cron` (always-on hosts) or by an external cron hitting a secured HTTP endpoint (sleeping/free tiers, serverless). See "Daily post flow" below.
 
 ## Setup
 
@@ -41,7 +41,7 @@ Swagger at `http://localhost:3000/docs`.
 | `users`      | Profile, reminder schedule                                             |
 | `tasks`      | Today's tasks, history, mark done — full CQRS                          |
 | `discord`    | OAuth callback, channel listing, channel selection, posting            |
-| `scheduler`  | `@Cron` job for end-of-day posting                                     |
+| `scheduler`  | Due-post runner + secured HTTP cron trigger (`/internal/cron/...`)      |
 | `prisma`     | Global Prisma client                                                   |
 
 ## How CQRS works here
@@ -68,22 +68,52 @@ The benefit: every business operation is named, typed, and tested in isolation. 
 
 ## Daily post flow (automatic)
 
-1. Cron tick every minute (`@Cron(CronExpression.EVERY_MINUTE)`)
-2. Find users where local time = `endOfDayTime`
-3. For each user: load tasks → load enabled channels → format per-channel → post sequentially
-4. Log success/failure per channel in `post_logs` table
+Each run (`SchedulerService.runDuePosts()`):
 
-## Testing the cron locally
+1. Load all users.
+2. For each user, compute their local time. A post is **due** once `localTime >= goalPostTime` (goal) / `>= workUpdateTime` (work update) — a *window*, not an exact minute.
+3. If a successful `post_logs` row already exists for that `(user, kind, local-day)`, **skip** (idempotent — posts at most once per day).
+4. Otherwise load tasks → enabled+routed channels → format per-channel → post → record per-channel result in `post_logs`.
 
-Set your `endOfDayTime` to a minute from now and add some tasks for today. Wait, watch the logs.
+### What triggers a run
+
+Two interchangeable triggers (both call the same `runDuePosts()`; idempotency makes running both safe):
+
+- **In-process cron** — `@Cron(EVERY_MINUTE)`. Only fires while the Node process is alive and awake. Enable with `ENABLE_INPROCESS_CRON=true` on an always-on host (paid Render/Fly/VM/container). **On a sleeping free tier or serverless it will not run** — the process isn't alive to tick.
+- **External cron → HTTP endpoint** — `POST /api/internal/cron/run-due-posts`, authorized by `CRON_SECRET` sent in a header — `Authorization: Bearer <secret>` or `X-Cron-Key: <secret>` (header, not `?key=`, so the secret never hits access logs; fails closed if unset). Point any scheduler at it:
+  - **Minute-accurate:** a dedicated cron service like [cron-job.org](https://cron-job.org) or Upstash QStash, every minute.
+  - **Committed / zero-signup:** `.github/workflows/scheduled-posts.yml` (every 5 min; set repo var `BACKEND_URL` and secret `CRON_SECRET`).
+
+> Because matching is a catch-up window + idempotency (not exact-minute equality), a missed minute — cold start, restart, deploy, a coarse 5-min external cron — still posts once, later that same local day, instead of being lost until tomorrow.
+
+## Testing locally
+
+With `ENABLE_INPROCESS_CRON=true`, set your `goalPostTime` a minute from now, add tasks + a Discord channel, and watch the logs:
 
 ```sql
-UPDATE users SET end_of_day_time = '14:30' WHERE email = 'you@example.com';
+UPDATE users SET goal_post_time = '14:30' WHERE email = 'you@example.com';
+```
+
+Or trigger a run immediately (bypasses the wait; still idempotent per day):
+
+```bash
+curl -X POST http://localhost:3000/api/internal/cron/run-due-posts \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
+To force a post regardless of schedule/idempotency (e.g. verify Discord delivery), use the per-user test endpoint:
+
+```bash
+curl -X POST http://localhost:3000/api/discord/test-publish \
+  -H "Authorization: Bearer <user-jwt>" -H "Content-Type: application/json" \
+  -d '{"kind":"goal"}'
 ```
 
 ## Production notes
 
+- **Scheduling on a sleeping/free host**: in-process `@Cron` won't fire while the service is spun down. Drive posting via the external-cron HTTP endpoint above (this is the intended setup for Render free).
+- **Build generates the Prisma client**: `build` runs `prisma generate && nest build`. The generated client (`prisma/generated/`) is not committed, so the build step must run on deploy.
 - **Bot token security**: never commit `.env`. Use a secrets manager in production.
-- **Database migrations**: `npx prisma migrate deploy` in CI/prod.
-- **Rate limits**: Discord allows ~5 req/sec per channel. For 1000s of users hitting 11 PM together, switch to BullMQ + Redis for a queue.
+- **Database migrations**: `npx prisma migrate deploy` in CI/prod. Avoid `db:push:reset` against a real DB — it drops data (`db:push` alone is non-destructive).
+- **Rate limits**: Discord allows ~5 req/sec per channel. For 1000s of users hitting the same minute, switch to BullMQ + Redis for a queue.
 - **Encryption**: `CryptoService` uses AES-256-GCM for at-rest token encryption.
