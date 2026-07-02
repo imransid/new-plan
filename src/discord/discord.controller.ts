@@ -156,11 +156,10 @@ export class DiscordController {
     @CurrentUser() user: AuthUser,
     @Body() dto: TestPublishDto,
   ) {
-    if (dto.kind === "goal") {
-      return this.discordPoster.postGoalList(user.userId);
-    }
-    if (dto.kind === "work_update") {
-      return this.discordPoster.postWorkUpdate(user.userId);
+    if (dto.kind === "goal" || dto.kind === "work_update") {
+      // Posts to the user's personal channels AND any team channels they've
+      // joined — so a team member with no personal connection still delivers.
+      return this.discordPoster.publishNow(user.userId, dto.kind);
     }
     throw new BadRequestException("Unknown kind");
   }

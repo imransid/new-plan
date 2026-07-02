@@ -41,6 +41,30 @@ export class DiscordPosterService {
     return this.run(userId, "work_update");
   }
 
+  /**
+   * Manual "Send now" from the app: publish this kind to the user's personal
+   * channels AND their joined team channels immediately. Team posting is forced
+   * (bypasses the once-per-day idempotency) so the button always delivers —
+   * this is what a member with no personal channels relies on.
+   */
+  async publishNow(
+    userId: string,
+    kind: "goal" | "work_update",
+  ): Promise<PostResult> {
+    const personal =
+      kind === "goal"
+        ? await this.postGoalList(userId)
+        : await this.postWorkUpdate(userId);
+    const shared = await this.postToSharedChannels(userId, kind, {
+      force: true,
+    });
+    return {
+      posted: personal.posted + shared.posted,
+      failed: personal.failed + shared.failed,
+      results: [...personal.results, ...shared.results],
+    };
+  }
+
   // ─── existing daily wrap (kept for backward compat) ─────────────────────
   async postDailyWrap(userId: string): Promise<PostResult> {
     return this.run(userId, "wrap");
@@ -80,6 +104,7 @@ export class DiscordPosterService {
   async postToSharedChannels(
     userId: string,
     kind: PostKind,
+    opts: { force?: boolean } = {},
   ): Promise<PostResult> {
     // Cheapest gate first: most users aren't in any team channel, so skip all
     // other work for them.
@@ -125,18 +150,21 @@ export class DiscordPosterService {
     for (const m of memberships) {
       const sc = m.sharedChannel;
 
-      // Per-(member, shared channel, kind, day) idempotency.
-      const already = await this.prisma.sharedChannelPostLog.findFirst({
-        where: {
-          sharedChannelId: sc.id,
-          userId,
-          kind,
-          date: today,
-          status: "success",
-        },
-        select: { id: true },
-      });
-      if (already) continue;
+      // Per-(member, shared channel, kind, day) idempotency — skipped for a
+      // forced manual "Send now" so the user can always re-verify delivery.
+      if (!opts.force) {
+        const already = await this.prisma.sharedChannelPostLog.findFirst({
+          where: {
+            sharedChannelId: sc.id,
+            userId,
+            kind,
+            date: today,
+            status: "success",
+          },
+          select: { id: true },
+        });
+        if (already) continue;
+      }
 
       try {
         const payload =
