@@ -56,7 +56,10 @@ export const ModelName = {
   DiscordConnection: 'DiscordConnection',
   DiscordChannel: 'DiscordChannel',
   ReminderSchedule: 'ReminderSchedule',
-  PostLog: 'PostLog'
+  PostLog: 'PostLog',
+  SharedChannel: 'SharedChannel',
+  SharedChannelMember: 'SharedChannelMember',
+  SharedChannelPostLog: 'SharedChannelPostLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -168,6 +171,53 @@ export const PostLogScalarFieldEnum = {
 } as const
 
 export type PostLogScalarFieldEnum = (typeof PostLogScalarFieldEnum)[keyof typeof PostLogScalarFieldEnum]
+
+
+export const SharedChannelScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  connectionId: 'connectionId',
+  channelId: 'channelId',
+  channelName: 'channelName',
+  joinCode: 'joinCode',
+  enabled: 'enabled',
+  postGoals: 'postGoals',
+  postUpdates: 'postUpdates',
+  maxMembers: 'maxMembers',
+  webhookId: 'webhookId',
+  webhookToken: 'webhookToken',
+  lastError: 'lastError',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SharedChannelScalarFieldEnum = (typeof SharedChannelScalarFieldEnum)[keyof typeof SharedChannelScalarFieldEnum]
+
+
+export const SharedChannelMemberScalarFieldEnum = {
+  id: 'id',
+  sharedChannelId: 'sharedChannelId',
+  userId: 'userId',
+  enabled: 'enabled',
+  createdAt: 'createdAt'
+} as const
+
+export type SharedChannelMemberScalarFieldEnum = (typeof SharedChannelMemberScalarFieldEnum)[keyof typeof SharedChannelMemberScalarFieldEnum]
+
+
+export const SharedChannelPostLogScalarFieldEnum = {
+  id: 'id',
+  sharedChannelId: 'sharedChannelId',
+  userId: 'userId',
+  date: 'date',
+  postedAt: 'postedAt',
+  kind: 'kind',
+  status: 'status',
+  errorCode: 'errorCode',
+  errorMessage: 'errorMessage'
+} as const
+
+export type SharedChannelPostLogScalarFieldEnum = (typeof SharedChannelPostLogScalarFieldEnum)[keyof typeof SharedChannelPostLogScalarFieldEnum]
 
 
 export const SortOrder = {

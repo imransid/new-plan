@@ -31,6 +31,10 @@ model User {
   reminderSchedule   ReminderSchedule?
   postLogs           PostLog[]
 
+  // Team channels: feeds this user owns, and feeds they've joined as a member.
+  ownedSharedChannels SharedChannel[]       @relation("SharedChannelOwner")
+  sharedMemberships   SharedChannelMember[]
+
   @@map("users")
 }
 
@@ -65,6 +69,7 @@ model DiscordConnection {
 
   user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   channels DiscordChannel[]
+  sharedChannels SharedChannel[]
 
   @@unique([userId, guildId])
   @@map("discord_connections")
@@ -138,4 +143,73 @@ model PostLog {
 
   @@index([userId, date])
   @@map("post_logs")
+}
+
+// ─── Team / shared channels ────────────────────────────────────────────────
+// A DiscordChannel (in an admin's guild, bot present) flagged as a shared
+// "team feed". Members join via `joinCode` and their scheduled goal/work-update
+// posts are delivered here (attributed by webhook username). Members do NOT
+// need their own Discord connection — the owner's bot posts on their behalf.
+model SharedChannel {
+  id           String @id @default(uuid())
+  ownerUserId  String // the admin who owns the feed
+  connectionId String // which DiscordConnection this channel belongs to
+  channelId    String // Discord text channel id (bot present)
+  channelName  String
+
+  joinCode    String  @unique // high-entropy Base62; rotatable
+  enabled     Boolean @default(true) // master off-switch for the whole feed
+  postGoals   Boolean @default(true) // route "TODAY GOAL" posts here
+  postUpdates Boolean @default(true) // route "Work Updated" posts here
+  maxMembers  Int     @default(50) // membership cap
+
+  // Same webhook plumbing as DiscordChannel so the poster can treat it identically.
+  webhookId    String?
+  webhookToken String?
+  lastError    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner      User                  @relation("SharedChannelOwner", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  connection DiscordConnection     @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  members    SharedChannelMember[]
+
+  // One shareable feed per (connection, channel); re-flagging is an idempotent upsert.
+  @@unique([connectionId, channelId])
+  @@index([ownerUserId])
+  @@map("shared_channels")
+}
+
+model SharedChannelMember {
+  id              String  @id @default(uuid())
+  sharedChannelId String
+  userId          String
+  enabled         Boolean @default(true) // member can pause their own posting without leaving
+
+  createdAt DateTime @default(now())
+
+  sharedChannel SharedChannel @relation(fields: [sharedChannelId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sharedChannelId, userId]) // duplicate-join guard
+  @@index([userId])
+  @@map("shared_channel_members")
+}
+
+// Per-(member, shared channel, kind, local-day) idempotency — kept separate from
+// PostLog so a member's shared post is independent of their personal posts.
+model SharedChannelPostLog {
+  id              String   @id @default(uuid())
+  sharedChannelId String
+  userId          String
+  date            DateTime @db.Date
+  postedAt        DateTime @default(now())
+  kind            String // 'goal' | 'work_update'
+  status          String // 'success' | 'failed'
+  errorCode       Int?
+  errorMessage    String?
+
+  @@index([sharedChannelId, userId, date, kind])
+  @@map("shared_channel_post_logs")
 }

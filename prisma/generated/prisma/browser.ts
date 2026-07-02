@@ -47,3 +47,18 @@ export type ReminderSchedule = Prisma.ReminderScheduleModel
  * 
  */
 export type PostLog = Prisma.PostLogModel
+/**
+ * Model SharedChannel
+ * 
+ */
+export type SharedChannel = Prisma.SharedChannelModel
+/**
+ * Model SharedChannelMember
+ * 
+ */
+export type SharedChannelMember = Prisma.SharedChannelMemberModel
+/**
+ * Model SharedChannelPostLog
+ * 
+ */
+export type SharedChannelPostLog = Prisma.SharedChannelPostLogModel

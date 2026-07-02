@@ -216,6 +216,7 @@ export type DiscordConnectionWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"DiscordConnection"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   channels?: Prisma.DiscordChannelListRelationFilter
+  sharedChannels?: Prisma.SharedChannelListRelationFilter
 }
 
 export type DiscordConnectionOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type DiscordConnectionOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   channels?: Prisma.DiscordChannelOrderByRelationAggregateInput
+  sharedChannels?: Prisma.SharedChannelOrderByRelationAggregateInput
 }
 
 export type DiscordConnectionWhereUniqueInput = Prisma.AtLeast<{
@@ -248,6 +250,7 @@ export type DiscordConnectionWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"DiscordConnection"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   channels?: Prisma.DiscordChannelListRelationFilter
+  sharedChannels?: Prisma.SharedChannelListRelationFilter
 }, "id" | "userId_guildId">
 
 export type DiscordConnectionOrderByWithAggregationInput = {
@@ -291,6 +294,7 @@ export type DiscordConnectionCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDiscordConnectionsInput
   channels?: Prisma.DiscordChannelCreateNestedManyWithoutConnectionInput
+  sharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionUncheckedCreateInput = {
@@ -304,6 +308,7 @@ export type DiscordConnectionUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   channels?: Prisma.DiscordChannelUncheckedCreateNestedManyWithoutConnectionInput
+  sharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionUpdateInput = {
@@ -317,6 +322,7 @@ export type DiscordConnectionUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDiscordConnectionsNestedInput
   channels?: Prisma.DiscordChannelUpdateManyWithoutConnectionNestedInput
+  sharedChannels?: Prisma.SharedChannelUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionUncheckedUpdateInput = {
@@ -330,6 +336,7 @@ export type DiscordConnectionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channels?: Prisma.DiscordChannelUncheckedUpdateManyWithoutConnectionNestedInput
+  sharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionCreateManyInput = {
@@ -479,6 +486,20 @@ export type DiscordConnectionUpdateOneRequiredWithoutChannelsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DiscordConnectionUpdateToOneWithWhereWithoutChannelsInput, Prisma.DiscordConnectionUpdateWithoutChannelsInput>, Prisma.DiscordConnectionUncheckedUpdateWithoutChannelsInput>
 }
 
+export type DiscordConnectionCreateNestedOneWithoutSharedChannelsInput = {
+  create?: Prisma.XOR<Prisma.DiscordConnectionCreateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedCreateWithoutSharedChannelsInput>
+  connectOrCreate?: Prisma.DiscordConnectionCreateOrConnectWithoutSharedChannelsInput
+  connect?: Prisma.DiscordConnectionWhereUniqueInput
+}
+
+export type DiscordConnectionUpdateOneRequiredWithoutSharedChannelsNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscordConnectionCreateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedCreateWithoutSharedChannelsInput>
+  connectOrCreate?: Prisma.DiscordConnectionCreateOrConnectWithoutSharedChannelsInput
+  upsert?: Prisma.DiscordConnectionUpsertWithoutSharedChannelsInput
+  connect?: Prisma.DiscordConnectionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiscordConnectionUpdateToOneWithWhereWithoutSharedChannelsInput, Prisma.DiscordConnectionUpdateWithoutSharedChannelsInput>, Prisma.DiscordConnectionUncheckedUpdateWithoutSharedChannelsInput>
+}
+
 export type DiscordConnectionCreateWithoutUserInput = {
   id?: string
   guildId: string
@@ -489,6 +510,7 @@ export type DiscordConnectionCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   channels?: Prisma.DiscordChannelCreateNestedManyWithoutConnectionInput
+  sharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionUncheckedCreateWithoutUserInput = {
@@ -501,6 +523,7 @@ export type DiscordConnectionUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   channels?: Prisma.DiscordChannelUncheckedCreateNestedManyWithoutConnectionInput
+  sharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionCreateOrConnectWithoutUserInput = {
@@ -554,6 +577,7 @@ export type DiscordConnectionCreateWithoutChannelsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutDiscordConnectionsInput
+  sharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionUncheckedCreateWithoutChannelsInput = {
@@ -566,6 +590,7 @@ export type DiscordConnectionUncheckedCreateWithoutChannelsInput = {
   tokenExpiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutConnectionInput
 }
 
 export type DiscordConnectionCreateOrConnectWithoutChannelsInput = {
@@ -594,6 +619,7 @@ export type DiscordConnectionUpdateWithoutChannelsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutDiscordConnectionsNestedInput
+  sharedChannels?: Prisma.SharedChannelUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionUncheckedUpdateWithoutChannelsInput = {
@@ -606,6 +632,75 @@ export type DiscordConnectionUncheckedUpdateWithoutChannelsInput = {
   tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutConnectionNestedInput
+}
+
+export type DiscordConnectionCreateWithoutSharedChannelsInput = {
+  id?: string
+  guildId: string
+  guildName: string
+  accessToken: string
+  refreshToken?: string | null
+  tokenExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutDiscordConnectionsInput
+  channels?: Prisma.DiscordChannelCreateNestedManyWithoutConnectionInput
+}
+
+export type DiscordConnectionUncheckedCreateWithoutSharedChannelsInput = {
+  id?: string
+  userId: string
+  guildId: string
+  guildName: string
+  accessToken: string
+  refreshToken?: string | null
+  tokenExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  channels?: Prisma.DiscordChannelUncheckedCreateNestedManyWithoutConnectionInput
+}
+
+export type DiscordConnectionCreateOrConnectWithoutSharedChannelsInput = {
+  where: Prisma.DiscordConnectionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiscordConnectionCreateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedCreateWithoutSharedChannelsInput>
+}
+
+export type DiscordConnectionUpsertWithoutSharedChannelsInput = {
+  update: Prisma.XOR<Prisma.DiscordConnectionUpdateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedUpdateWithoutSharedChannelsInput>
+  create: Prisma.XOR<Prisma.DiscordConnectionCreateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedCreateWithoutSharedChannelsInput>
+  where?: Prisma.DiscordConnectionWhereInput
+}
+
+export type DiscordConnectionUpdateToOneWithWhereWithoutSharedChannelsInput = {
+  where?: Prisma.DiscordConnectionWhereInput
+  data: Prisma.XOR<Prisma.DiscordConnectionUpdateWithoutSharedChannelsInput, Prisma.DiscordConnectionUncheckedUpdateWithoutSharedChannelsInput>
+}
+
+export type DiscordConnectionUpdateWithoutSharedChannelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  guildId?: Prisma.StringFieldUpdateOperationsInput | string
+  guildName?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.StringFieldUpdateOperationsInput | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutDiscordConnectionsNestedInput
+  channels?: Prisma.DiscordChannelUpdateManyWithoutConnectionNestedInput
+}
+
+export type DiscordConnectionUncheckedUpdateWithoutSharedChannelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  guildId?: Prisma.StringFieldUpdateOperationsInput | string
+  guildName?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.StringFieldUpdateOperationsInput | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  channels?: Prisma.DiscordChannelUncheckedUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionCreateManyUserInput = {
@@ -629,6 +724,7 @@ export type DiscordConnectionUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channels?: Prisma.DiscordChannelUpdateManyWithoutConnectionNestedInput
+  sharedChannels?: Prisma.SharedChannelUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionUncheckedUpdateWithoutUserInput = {
@@ -641,6 +737,7 @@ export type DiscordConnectionUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   channels?: Prisma.DiscordChannelUncheckedUpdateManyWithoutConnectionNestedInput
+  sharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutConnectionNestedInput
 }
 
 export type DiscordConnectionUncheckedUpdateManyWithoutUserInput = {
@@ -661,10 +758,12 @@ export type DiscordConnectionUncheckedUpdateManyWithoutUserInput = {
 
 export type DiscordConnectionCountOutputType = {
   channels: number
+  sharedChannels: number
 }
 
 export type DiscordConnectionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channels?: boolean | DiscordConnectionCountOutputTypeCountChannelsArgs
+  sharedChannels?: boolean | DiscordConnectionCountOutputTypeCountSharedChannelsArgs
 }
 
 /**
@@ -684,6 +783,13 @@ export type DiscordConnectionCountOutputTypeCountChannelsArgs<ExtArgs extends ru
   where?: Prisma.DiscordChannelWhereInput
 }
 
+/**
+ * DiscordConnectionCountOutputType without action
+ */
+export type DiscordConnectionCountOutputTypeCountSharedChannelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SharedChannelWhereInput
+}
+
 
 export type DiscordConnectionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -697,6 +803,7 @@ export type DiscordConnectionSelect<ExtArgs extends runtime.Types.Extensions.Int
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channels?: boolean | Prisma.DiscordConnection$channelsArgs<ExtArgs>
+  sharedChannels?: boolean | Prisma.DiscordConnection$sharedChannelsArgs<ExtArgs>
   _count?: boolean | Prisma.DiscordConnectionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discordConnection"]>
 
@@ -742,6 +849,7 @@ export type DiscordConnectionOmit<ExtArgs extends runtime.Types.Extensions.Inter
 export type DiscordConnectionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   channels?: boolean | Prisma.DiscordConnection$channelsArgs<ExtArgs>
+  sharedChannels?: boolean | Prisma.DiscordConnection$sharedChannelsArgs<ExtArgs>
   _count?: boolean | Prisma.DiscordConnectionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DiscordConnectionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -756,6 +864,7 @@ export type $DiscordConnectionPayload<ExtArgs extends runtime.Types.Extensions.I
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     channels: Prisma.$DiscordChannelPayload<ExtArgs>[]
+    sharedChannels: Prisma.$SharedChannelPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1163,6 +1272,7 @@ export interface Prisma__DiscordConnectionClient<T, Null = never, ExtArgs extend
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   channels<T extends Prisma.DiscordConnection$channelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiscordConnection$channelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscordChannelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sharedChannels<T extends Prisma.DiscordConnection$sharedChannelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DiscordConnection$sharedChannelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SharedChannelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1623,6 +1733,30 @@ export type DiscordConnection$channelsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.DiscordChannelScalarFieldEnum | Prisma.DiscordChannelScalarFieldEnum[]
+}
+
+/**
+ * DiscordConnection.sharedChannels
+ */
+export type DiscordConnection$sharedChannelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SharedChannel
+   */
+  select?: Prisma.SharedChannelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SharedChannel
+   */
+  omit?: Prisma.SharedChannelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SharedChannelInclude<ExtArgs> | null
+  where?: Prisma.SharedChannelWhereInput
+  orderBy?: Prisma.SharedChannelOrderByWithRelationInput | Prisma.SharedChannelOrderByWithRelationInput[]
+  cursor?: Prisma.SharedChannelWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SharedChannelScalarFieldEnum | Prisma.SharedChannelScalarFieldEnum[]
 }
 
 /**

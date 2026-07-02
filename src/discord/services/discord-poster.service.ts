@@ -5,6 +5,7 @@ import {
   utcNowJsDate,
 } from "../../common/utc-datetime";
 import { PrismaService } from "../../../prisma/prisma.service";
+import { ChannelFormat } from "../../../prisma/generated/prisma/client";
 import { DiscordApiService } from "./discord-api.service";
 import { MessageFormatterService } from "./message-formatter.service";
 
@@ -64,6 +65,164 @@ export class DiscordPosterService {
       select: { id: true },
     });
     return existing !== null;
+  }
+
+  // ─── Team / shared channel pass ─────────────────────────────────────────
+  /**
+   * Post this user's due goal/work-update into every shared ("team") channel
+   * they've joined, attributed to them via the webhook username (the owner's
+   * bot posts on their behalf — the member needs no Discord connection).
+   *
+   * Independent of the personal path and idempotent per
+   * (user, shared channel, kind, local day) via SharedChannelPostLog, so it is
+   * safe to call every scheduler tick and it survives missed minutes.
+   */
+  async postToSharedChannels(
+    userId: string,
+    kind: PostKind,
+  ): Promise<PostResult> {
+    // Cheapest gate first: most users aren't in any team channel, so skip all
+    // other work for them.
+    const memberships = await this.prisma.sharedChannelMember.findMany({
+      where: {
+        userId,
+        enabled: true,
+        sharedChannel: {
+          enabled: true,
+          ...(kind === "goal" ? { postGoals: true } : { postUpdates: true }),
+        },
+      },
+      include: { sharedChannel: true },
+    });
+    if (memberships.length === 0) return { posted: 0, failed: 0, results: [] };
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, timezone: true },
+    });
+    if (!user) return { posted: 0, failed: 0, results: [] };
+
+    const username = this.displayNameForDiscord(user);
+    const today = localTaskDayStartForDb(user.timezone);
+
+    const tasks = await this.prisma.task.findMany({
+      where: { userId, date: today },
+      orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+    });
+    const payloadTasks =
+      kind === "work_update" ? tasks.filter((t) => t.doneAt) : tasks;
+    // Skip empty work-updates (same rule as personal); empty goal lists still
+    // post as a "plan is empty" nudge.
+    if (kind !== "goal" && payloadTasks.length === 0) {
+      return { posted: 0, failed: 0, results: [] };
+    }
+
+    const dateLabel = DateTime.fromJSDate(today, { zone: "utc" }).toFormat(
+      "LLLL d",
+    );
+    const results: PostResult["results"] = [];
+
+    for (const m of memberships) {
+      const sc = m.sharedChannel;
+
+      // Per-(member, shared channel, kind, day) idempotency.
+      const already = await this.prisma.sharedChannelPostLog.findFirst({
+        where: {
+          sharedChannelId: sc.id,
+          userId,
+          kind,
+          date: today,
+          status: "success",
+        },
+        select: { id: true },
+      });
+      if (already) continue;
+
+      try {
+        const payload =
+          kind === "goal"
+            ? this.formatter.formatGoals(
+                payloadTasks,
+                ChannelFormat.EMBED,
+                dateLabel,
+              )
+            : this.formatter.formatWorkUpdate(
+                payloadTasks,
+                ChannelFormat.EMBED,
+                dateLabel,
+              );
+
+        await this.deliverDiscordMessage(
+          {
+            id: sc.id,
+            channelId: sc.channelId,
+            webhookId: sc.webhookId,
+            webhookToken: sc.webhookToken,
+          },
+          payload,
+          username,
+          (wid, wtoken) =>
+            this.prisma.sharedChannel.update({
+              where: { id: sc.id },
+              data: { webhookId: wid, webhookToken: wtoken },
+            }),
+        );
+
+        await this.prisma.sharedChannel.update({
+          where: { id: sc.id },
+          data: { lastError: null },
+        });
+        await this.prisma.sharedChannelPostLog.create({
+          data: {
+            sharedChannelId: sc.id,
+            userId,
+            date: today,
+            kind,
+            status: "success",
+          },
+        });
+        results.push({ channelName: sc.channelName, status: "success" });
+      } catch (err: any) {
+        const message =
+          err?.response?.data?.message ?? err?.message ?? "Unknown error";
+        const code = err?.response?.status;
+        this.logger.error(
+          `Failed posting ${kind} to shared #${sc.channelName} for user ${userId}: ${message}`,
+        );
+        await this.prisma.sharedChannel.update({
+          where: { id: sc.id },
+          data: { lastError: message },
+        });
+        await this.prisma.sharedChannelPostLog.create({
+          data: {
+            sharedChannelId: sc.id,
+            userId,
+            date: today,
+            kind,
+            status: "failed",
+            errorCode: code,
+            errorMessage: message,
+          },
+        });
+        results.push({
+          channelName: sc.channelName,
+          status: "failed",
+          error: message,
+        });
+      }
+
+      // Stagger sends so many members hitting the same channel within one
+      // minute stay well under Discord's ~5 msg / 5 s per-channel ceiling.
+      await this.sleep(400);
+    }
+
+    const posted = results.filter((r) => r.status === "success").length;
+    const failed = results.filter((r) => r.status === "failed").length;
+    return { posted, failed, results };
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // ─── Shared posting pipeline ────────────────────────────────────────────
@@ -241,7 +400,21 @@ export class DiscordPosterService {
     },
     payload: { content?: string; embeds?: unknown[] },
     username: string,
+    // Where to persist a (re)issued webhook. Personal channels default to the
+    // DiscordChannel row; shared channels pass a SharedChannel updater. This is
+    // the ONLY difference between the personal and team delivery paths.
+    updateWebhook?: (
+      webhookId: string | null,
+      webhookToken: string | null,
+    ) => Promise<unknown>,
   ): Promise<void> {
+    const persist =
+      updateWebhook ??
+      ((wid: string | null, wtoken: string | null) =>
+        this.prisma.discordChannel.update({
+          where: { id: channel.id },
+          data: { webhookId: wid, webhookToken: wtoken },
+        }));
     try {
       let wid = channel.webhookId;
       let wtoken = channel.webhookToken;
@@ -250,10 +423,7 @@ export class DiscordPosterService {
         const w = await this.api.ensurePostingWebhook(channel.channelId);
         wid = w.id;
         wtoken = w.token;
-        await this.prisma.discordChannel.update({
-          where: { id: channel.id },
-          data: { webhookId: wid, webhookToken: wtoken },
-        });
+        await persist(wid, wtoken);
       }
 
       const sendWebhook = () =>
@@ -264,15 +434,9 @@ export class DiscordPosterService {
       } catch (err: any) {
         const code = err?.response?.status;
         if (code === 401 || code === 404) {
-          await this.prisma.discordChannel.update({
-            where: { id: channel.id },
-            data: { webhookId: null, webhookToken: null },
-          });
+          await persist(null, null);
           const w = await this.api.ensurePostingWebhook(channel.channelId);
-          await this.prisma.discordChannel.update({
-            where: { id: channel.id },
-            data: { webhookId: w.id, webhookToken: w.token },
-          });
+          await persist(w.id, w.token);
           wid = w.id;
           wtoken = w.token;
           await this.api.executeWebhook(wid, wtoken, { ...payload, username });

@@ -163,6 +163,7 @@ export class SchedulerService {
     kind: PostKind,
     summary: RunDuePostsSummary,
   ): Promise<void> {
+    // ── Personal channels (guarded by personal idempotency) ──
     try {
       const already = await this.discordPoster.hasSuccessfulPostToday(
         user.id,
@@ -171,34 +172,56 @@ export class SchedulerService {
       );
       if (already) {
         summary.skipped++;
-        return;
-      }
-
-      const result =
-        kind === "goal"
-          ? await this.discordPoster.postGoalList(user.id)
-          : await this.discordPoster.postWorkUpdate(user.id);
-
-      if (result.posted > 0) {
-        if (kind === "goal") summary.goalPosted++;
-        else summary.workUpdatePosted++;
-        this.logger.log(
-          `[${kind}] User ${user.email}: posted ${result.posted}, failed ${result.failed}`,
-        );
       } else {
-        // Nothing delivered (no eligible channel, or an empty work-update that
-        // is skipped by design). Not counted as posted; will retry next tick
-        // until it succeeds or the local day rolls over.
-        summary.skipped++;
-        if (result.failed > 0) {
-          this.logger.warn(
-            `[${kind}] User ${user.email}: 0 posted, ${result.failed} failed`,
+        const result =
+          kind === "goal"
+            ? await this.discordPoster.postGoalList(user.id)
+            : await this.discordPoster.postWorkUpdate(user.id);
+
+        if (result.posted > 0) {
+          if (kind === "goal") summary.goalPosted++;
+          else summary.workUpdatePosted++;
+          this.logger.log(
+            `[${kind}] User ${user.email}: posted ${result.posted}, failed ${result.failed}`,
           );
+        } else {
+          // Nothing delivered (no eligible channel, or an empty work-update
+          // skipped by design). Will retry next tick until it succeeds or the
+          // local day rolls over.
+          summary.skipped++;
+          if (result.failed > 0) {
+            this.logger.warn(
+              `[${kind}] User ${user.email}: 0 posted, ${result.failed} failed`,
+            );
+          }
         }
       }
     } catch (err) {
       summary.errors++;
       this.logger.error(`[${kind}] Failed for user ${user.email}`, err as Error);
+    }
+
+    // ── Team/shared channels (independent, own idempotency) ──
+    // Must run regardless of the personal guard above: a member may have no
+    // personal channels, or may have already posted personally while a shared
+    // feed still needs their post. postToSharedChannels is idempotent per
+    // (user, shared channel, kind, day), so re-running the tick is safe.
+    try {
+      const shared = await this.discordPoster.postToSharedChannels(
+        user.id,
+        kind,
+      );
+      if (shared.posted > 0) {
+        this.logger.log(
+          `[${kind}] User ${user.email}: team posted ${shared.posted}, failed ${shared.failed}`,
+        );
+      }
+    } catch (err) {
+      summary.errors++;
+      this.logger.error(
+        `[${kind}] Team post failed for user ${user.email}`,
+        err as Error,
+      );
     }
   }
 }

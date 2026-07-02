@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Query,
   Res,
@@ -21,13 +24,24 @@ import type { AuthUser } from "../common/decorators/current-user.decorator";
 import { DiscordApiService } from "./services/discord-api.service";
 import { DiscordPosterService } from "./services/discord-poster.service";
 import { StateService } from "./services/state.service";
-import { SaveChannelsDto } from "./dto/discord.dto";
+import {
+  SaveChannelsDto,
+  CreateSharedChannelDto,
+  JoinSharedChannelDto,
+  UpdateSharedChannelDto,
+} from "./dto/discord.dto";
 import { ConnectDiscordCommand } from "./commands/connect-discord.command";
 import { SaveChannelsCommand } from "./commands/save-channels.command";
+import { CreateSharedChannelCommand } from "./commands/create-shared-channel.command";
+import { RotateSharedChannelCodeCommand } from "./commands/rotate-shared-channel-code.command";
+import { UpdateSharedChannelCommand } from "./commands/update-shared-channel.command";
+import { JoinSharedChannelCommand } from "./commands/join-shared-channel.command";
+import { LeaveSharedChannelCommand } from "./commands/leave-shared-channel.command";
 import {
   ListAvailableChannelsQuery,
   GetUserConnectionsQuery,
 } from "./queries/list-channels.query";
+import { GetMySharedChannelsQuery } from "./queries/get-my-shared-channels.query";
 
 class TestPublishDto {
   @IsString()
@@ -149,5 +163,82 @@ export class DiscordController {
       return this.discordPoster.postWorkUpdate(user.userId);
     }
     throw new BadRequestException("Unknown kind");
+  }
+
+  // ─── Team / shared channels ───────────────────────────────────────
+  // Owner: flag one of your connected channels as a shared "team feed" and get
+  // a join code teammates enter in-app. Members: join/leave by code. Each
+  // member's scheduled goal/work-update then auto-posts into the feed under
+  // their name (via the owner's bot webhook).
+
+  @Get("discord/shared-channels")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "List team channels I own and ones I've joined" })
+  getSharedChannels(@CurrentUser() user: AuthUser) {
+    return this.queryBus.execute(new GetMySharedChannelsQuery(user.userId));
+  }
+
+  @Post("discord/shared-channels")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Make one of my channels a shared team channel" })
+  createSharedChannel(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: CreateSharedChannelDto,
+  ) {
+    return this.commandBus.execute(
+      new CreateSharedChannelCommand(user.userId, dto.guildId, dto.channelId),
+    );
+  }
+
+  @Patch("discord/shared-channels/:id")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Toggle a team channel (owner only)" })
+  updateSharedChannel(
+    @CurrentUser() user: AuthUser,
+    @Param("id") id: string,
+    @Body() dto: UpdateSharedChannelDto,
+  ) {
+    return this.commandBus.execute(
+      new UpdateSharedChannelCommand(user.userId, id, dto),
+    );
+  }
+
+  @Post("discord/shared-channels/:id/rotate-code")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Rotate the join code (owner only)" })
+  rotateSharedChannelCode(
+    @CurrentUser() user: AuthUser,
+    @Param("id") id: string,
+  ) {
+    return this.commandBus.execute(
+      new RotateSharedChannelCodeCommand(user.userId, id),
+    );
+  }
+
+  @Post("discord/shared-channels/join")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Join a team channel with a code" })
+  joinSharedChannel(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: JoinSharedChannelDto,
+  ) {
+    return this.commandBus.execute(
+      new JoinSharedChannelCommand(user.userId, dto.joinCode),
+    );
+  }
+
+  @Delete("discord/shared-channels/:id/leave")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Leave a team channel" })
+  leaveSharedChannel(@CurrentUser() user: AuthUser, @Param("id") id: string) {
+    return this.commandBus.execute(
+      new LeaveSharedChannelCommand(user.userId, id),
+    );
   }
 }

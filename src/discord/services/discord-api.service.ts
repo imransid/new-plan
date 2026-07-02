@@ -143,7 +143,9 @@ export class DiscordApiService {
     return { id: created.id, token: created.token };
   }
 
-  /** POST as webhook — appears in chat with optional username / avatar_url. */
+  /** POST as webhook — appears in chat with optional username / avatar_url.
+   * Honors Discord 429s (parses `retry_after`) with a small bounded backoff so
+   * many team members posting to one channel in the same minute don't fail. */
   async executeWebhook(
     webhookId: string,
     webhookToken: string,
@@ -153,12 +155,27 @@ export class DiscordApiService {
       username?: string;
       avatar_url?: string;
     },
+    attempt = 0,
   ): Promise<{ id: string }> {
-    const { data } = await axios.post<{ id: string }>(
-      `${DISCORD_API}/webhooks/${webhookId}/${webhookToken}`,
-      body,
-      { params: { wait: 'true' } },
-    );
-    return { id: data.id };
+    try {
+      const { data } = await axios.post<{ id: string }>(
+        `${DISCORD_API}/webhooks/${webhookId}/${webhookToken}`,
+        body,
+        { params: { wait: 'true' } },
+      );
+      return { id: data.id };
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 429 && attempt < 3) {
+        // Discord returns retry_after in seconds; fall back to exponential.
+        const retryAfter = err?.response?.data?.retry_after;
+        const delayMs = Math.ceil(
+          (typeof retryAfter === 'number' ? retryAfter : 2 ** attempt) * 1000,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        return this.executeWebhook(webhookId, webhookToken, body, attempt + 1);
+      }
+      throw err;
+    }
   }
 }

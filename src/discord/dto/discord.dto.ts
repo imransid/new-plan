@@ -55,6 +55,40 @@ export class SaveChannelsDto {
   channels!: ChannelSelectionDto[];
 }
 
+// ─── Team / shared channels ──────────────────────────────────
+export class CreateSharedChannelDto {
+  @ApiProperty()
+  @IsString()
+  guildId!: string;
+
+  @ApiProperty()
+  @IsString()
+  channelId!: string;
+}
+
+export class JoinSharedChannelDto {
+  @ApiProperty()
+  @IsString()
+  joinCode!: string;
+}
+
+export class UpdateSharedChannelDto {
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  enabled?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  postGoals?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  postUpdates?: boolean;
+}
+
 export class DiscordChannelDto {
   @ApiProperty()
   id!: string;

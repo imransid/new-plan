@@ -226,6 +226,8 @@ export type UserWhereInput = {
   discordConnections?: Prisma.DiscordConnectionListRelationFilter
   reminderSchedule?: Prisma.XOR<Prisma.ReminderScheduleNullableScalarRelationFilter, Prisma.ReminderScheduleWhereInput> | null
   postLogs?: Prisma.PostLogListRelationFilter
+  ownedSharedChannels?: Prisma.SharedChannelListRelationFilter
+  sharedMemberships?: Prisma.SharedChannelMemberListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -243,6 +245,8 @@ export type UserOrderByWithRelationInput = {
   discordConnections?: Prisma.DiscordConnectionOrderByRelationAggregateInput
   reminderSchedule?: Prisma.ReminderScheduleOrderByWithRelationInput
   postLogs?: Prisma.PostLogOrderByRelationAggregateInput
+  ownedSharedChannels?: Prisma.SharedChannelOrderByRelationAggregateInput
+  sharedMemberships?: Prisma.SharedChannelMemberOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +267,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   discordConnections?: Prisma.DiscordConnectionListRelationFilter
   reminderSchedule?: Prisma.XOR<Prisma.ReminderScheduleNullableScalarRelationFilter, Prisma.ReminderScheduleWhereInput> | null
   postLogs?: Prisma.PostLogListRelationFilter
+  ownedSharedChannels?: Prisma.SharedChannelListRelationFilter
+  sharedMemberships?: Prisma.SharedChannelMemberListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -312,6 +318,8 @@ export type UserCreateInput = {
   discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -329,6 +337,8 @@ export type UserUncheckedCreateInput = {
   discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -346,6 +356,8 @@ export type UserUpdateInput = {
   discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -363,6 +375,8 @@ export type UserUncheckedUpdateInput = {
   discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -516,6 +530,34 @@ export type UserUpdateOneRequiredWithoutPostLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostLogsInput, Prisma.UserUpdateWithoutPostLogsInput>, Prisma.UserUncheckedUpdateWithoutPostLogsInput>
 }
 
+export type UserCreateNestedOneWithoutOwnedSharedChannelsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedCreateWithoutOwnedSharedChannelsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedSharedChannelsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutOwnedSharedChannelsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedCreateWithoutOwnedSharedChannelsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedSharedChannelsInput
+  upsert?: Prisma.UserUpsertWithoutOwnedSharedChannelsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOwnedSharedChannelsInput, Prisma.UserUpdateWithoutOwnedSharedChannelsInput>, Prisma.UserUncheckedUpdateWithoutOwnedSharedChannelsInput>
+}
+
+export type UserCreateNestedOneWithoutSharedMembershipsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSharedMembershipsInput, Prisma.UserUncheckedCreateWithoutSharedMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSharedMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSharedMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSharedMembershipsInput, Prisma.UserUncheckedCreateWithoutSharedMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSharedMembershipsInput
+  upsert?: Prisma.UserUpsertWithoutSharedMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSharedMembershipsInput, Prisma.UserUpdateWithoutSharedMembershipsInput>, Prisma.UserUncheckedUpdateWithoutSharedMembershipsInput>
+}
+
 export type UserCreateWithoutTasksInput = {
   id?: string
   email: string
@@ -530,6 +572,8 @@ export type UserCreateWithoutTasksInput = {
   discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTasksInput = {
@@ -546,6 +590,8 @@ export type UserUncheckedCreateWithoutTasksInput = {
   discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTasksInput = {
@@ -578,6 +624,8 @@ export type UserUpdateWithoutTasksInput = {
   discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTasksInput = {
@@ -594,6 +642,8 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDiscordConnectionsInput = {
@@ -610,6 +660,8 @@ export type UserCreateWithoutDiscordConnectionsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDiscordConnectionsInput = {
@@ -626,6 +678,8 @@ export type UserUncheckedCreateWithoutDiscordConnectionsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
   postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDiscordConnectionsInput = {
@@ -658,6 +712,8 @@ export type UserUpdateWithoutDiscordConnectionsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDiscordConnectionsInput = {
@@ -674,6 +730,8 @@ export type UserUncheckedUpdateWithoutDiscordConnectionsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
   postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReminderScheduleInput = {
@@ -690,6 +748,8 @@ export type UserCreateWithoutReminderScheduleInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
   postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReminderScheduleInput = {
@@ -706,6 +766,8 @@ export type UserUncheckedCreateWithoutReminderScheduleInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
   postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReminderScheduleInput = {
@@ -738,6 +800,8 @@ export type UserUpdateWithoutReminderScheduleInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
   postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReminderScheduleInput = {
@@ -754,6 +818,8 @@ export type UserUncheckedUpdateWithoutReminderScheduleInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
   postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPostLogsInput = {
@@ -770,6 +836,8 @@ export type UserCreateWithoutPostLogsInput = {
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
   discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPostLogsInput = {
@@ -786,6 +854,8 @@ export type UserUncheckedCreateWithoutPostLogsInput = {
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
   discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPostLogsInput = {
@@ -818,6 +888,8 @@ export type UserUpdateWithoutPostLogsInput = {
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
   discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPostLogsInput = {
@@ -834,6 +906,184 @@ export type UserUncheckedUpdateWithoutPostLogsInput = {
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
   discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
   reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutOwnedSharedChannelsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  timezone?: string
+  goalPostTime?: string
+  workUpdateTime?: string
+  endOfDayTime?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
+  reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
+  postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  sharedMemberships?: Prisma.SharedChannelMemberCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutOwnedSharedChannelsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  timezone?: string
+  goalPostTime?: string
+  workUpdateTime?: string
+  endOfDayTime?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
+  reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
+  postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutOwnedSharedChannelsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedCreateWithoutOwnedSharedChannelsInput>
+}
+
+export type UserUpsertWithoutOwnedSharedChannelsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedUpdateWithoutOwnedSharedChannelsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedCreateWithoutOwnedSharedChannelsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOwnedSharedChannelsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOwnedSharedChannelsInput, Prisma.UserUncheckedUpdateWithoutOwnedSharedChannelsInput>
+}
+
+export type UserUpdateWithoutOwnedSharedChannelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  goalPostTime?: Prisma.StringFieldUpdateOperationsInput | string
+  workUpdateTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endOfDayTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
+  reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
+  postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOwnedSharedChannelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  goalPostTime?: Prisma.StringFieldUpdateOperationsInput | string
+  workUpdateTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endOfDayTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
+  reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
+  postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  sharedMemberships?: Prisma.SharedChannelMemberUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSharedMembershipsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  timezone?: string
+  goalPostTime?: string
+  workUpdateTime?: string
+  endOfDayTime?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  discordConnections?: Prisma.DiscordConnectionCreateNestedManyWithoutUserInput
+  reminderSchedule?: Prisma.ReminderScheduleCreateNestedOneWithoutUserInput
+  postLogs?: Prisma.PostLogCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelCreateNestedManyWithoutOwnerInput
+}
+
+export type UserUncheckedCreateWithoutSharedMembershipsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  name?: string | null
+  timezone?: string
+  goalPostTime?: string
+  workUpdateTime?: string
+  endOfDayTime?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  discordConnections?: Prisma.DiscordConnectionUncheckedCreateNestedManyWithoutUserInput
+  reminderSchedule?: Prisma.ReminderScheduleUncheckedCreateNestedOneWithoutUserInput
+  postLogs?: Prisma.PostLogUncheckedCreateNestedManyWithoutUserInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedCreateNestedManyWithoutOwnerInput
+}
+
+export type UserCreateOrConnectWithoutSharedMembershipsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSharedMembershipsInput, Prisma.UserUncheckedCreateWithoutSharedMembershipsInput>
+}
+
+export type UserUpsertWithoutSharedMembershipsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSharedMembershipsInput, Prisma.UserUncheckedUpdateWithoutSharedMembershipsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSharedMembershipsInput, Prisma.UserUncheckedCreateWithoutSharedMembershipsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSharedMembershipsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSharedMembershipsInput, Prisma.UserUncheckedUpdateWithoutSharedMembershipsInput>
+}
+
+export type UserUpdateWithoutSharedMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  goalPostTime?: Prisma.StringFieldUpdateOperationsInput | string
+  workUpdateTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endOfDayTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  discordConnections?: Prisma.DiscordConnectionUpdateManyWithoutUserNestedInput
+  reminderSchedule?: Prisma.ReminderScheduleUpdateOneWithoutUserNestedInput
+  postLogs?: Prisma.PostLogUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUpdateManyWithoutOwnerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSharedMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  goalPostTime?: Prisma.StringFieldUpdateOperationsInput | string
+  workUpdateTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endOfDayTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  discordConnections?: Prisma.DiscordConnectionUncheckedUpdateManyWithoutUserNestedInput
+  reminderSchedule?: Prisma.ReminderScheduleUncheckedUpdateOneWithoutUserNestedInput
+  postLogs?: Prisma.PostLogUncheckedUpdateManyWithoutUserNestedInput
+  ownedSharedChannels?: Prisma.SharedChannelUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 
@@ -845,12 +1095,16 @@ export type UserCountOutputType = {
   tasks: number
   discordConnections: number
   postLogs: number
+  ownedSharedChannels: number
+  sharedMemberships: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | UserCountOutputTypeCountTasksArgs
   discordConnections?: boolean | UserCountOutputTypeCountDiscordConnectionsArgs
   postLogs?: boolean | UserCountOutputTypeCountPostLogsArgs
+  ownedSharedChannels?: boolean | UserCountOutputTypeCountOwnedSharedChannelsArgs
+  sharedMemberships?: boolean | UserCountOutputTypeCountSharedMembershipsArgs
 }
 
 /**
@@ -884,6 +1138,20 @@ export type UserCountOutputTypeCountPostLogsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.PostLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOwnedSharedChannelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SharedChannelWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSharedMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SharedChannelMemberWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -900,6 +1168,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   discordConnections?: boolean | Prisma.User$discordConnectionsArgs<ExtArgs>
   reminderSchedule?: boolean | Prisma.User$reminderScheduleArgs<ExtArgs>
   postLogs?: boolean | Prisma.User$postLogsArgs<ExtArgs>
+  ownedSharedChannels?: boolean | Prisma.User$ownedSharedChannelsArgs<ExtArgs>
+  sharedMemberships?: boolean | Prisma.User$sharedMembershipsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -948,6 +1218,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   discordConnections?: boolean | Prisma.User$discordConnectionsArgs<ExtArgs>
   reminderSchedule?: boolean | Prisma.User$reminderScheduleArgs<ExtArgs>
   postLogs?: boolean | Prisma.User$postLogsArgs<ExtArgs>
+  ownedSharedChannels?: boolean | Prisma.User$ownedSharedChannelsArgs<ExtArgs>
+  sharedMemberships?: boolean | Prisma.User$sharedMembershipsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -960,6 +1232,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     discordConnections: Prisma.$DiscordConnectionPayload<ExtArgs>[]
     reminderSchedule: Prisma.$ReminderSchedulePayload<ExtArgs> | null
     postLogs: Prisma.$PostLogPayload<ExtArgs>[]
+    ownedSharedChannels: Prisma.$SharedChannelPayload<ExtArgs>[]
+    sharedMemberships: Prisma.$SharedChannelMemberPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1370,6 +1644,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   discordConnections<T extends Prisma.User$discordConnectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$discordConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscordConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reminderSchedule<T extends Prisma.User$reminderScheduleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reminderScheduleArgs<ExtArgs>>): Prisma.Prisma__ReminderScheduleClient<runtime.Types.Result.GetResult<Prisma.$ReminderSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   postLogs<T extends Prisma.User$postLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ownedSharedChannels<T extends Prisma.User$ownedSharedChannelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedSharedChannelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SharedChannelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sharedMemberships<T extends Prisma.User$sharedMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sharedMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SharedChannelMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1890,6 +2166,54 @@ export type User$postLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.PostLogScalarFieldEnum | Prisma.PostLogScalarFieldEnum[]
+}
+
+/**
+ * User.ownedSharedChannels
+ */
+export type User$ownedSharedChannelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SharedChannel
+   */
+  select?: Prisma.SharedChannelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SharedChannel
+   */
+  omit?: Prisma.SharedChannelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SharedChannelInclude<ExtArgs> | null
+  where?: Prisma.SharedChannelWhereInput
+  orderBy?: Prisma.SharedChannelOrderByWithRelationInput | Prisma.SharedChannelOrderByWithRelationInput[]
+  cursor?: Prisma.SharedChannelWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SharedChannelScalarFieldEnum | Prisma.SharedChannelScalarFieldEnum[]
+}
+
+/**
+ * User.sharedMemberships
+ */
+export type User$sharedMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SharedChannelMember
+   */
+  select?: Prisma.SharedChannelMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SharedChannelMember
+   */
+  omit?: Prisma.SharedChannelMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SharedChannelMemberInclude<ExtArgs> | null
+  where?: Prisma.SharedChannelMemberWhereInput
+  orderBy?: Prisma.SharedChannelMemberOrderByWithRelationInput | Prisma.SharedChannelMemberOrderByWithRelationInput[]
+  cursor?: Prisma.SharedChannelMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SharedChannelMemberScalarFieldEnum | Prisma.SharedChannelMemberScalarFieldEnum[]
 }
 
 /**

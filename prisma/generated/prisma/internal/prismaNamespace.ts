@@ -389,7 +389,10 @@ export const ModelName = {
   DiscordConnection: 'DiscordConnection',
   DiscordChannel: 'DiscordChannel',
   ReminderSchedule: 'ReminderSchedule',
-  PostLog: 'PostLog'
+  PostLog: 'PostLog',
+  SharedChannel: 'SharedChannel',
+  SharedChannelMember: 'SharedChannelMember',
+  SharedChannelPostLog: 'SharedChannelPostLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task" | "discordConnection" | "discordChannel" | "reminderSchedule" | "postLog"
+    modelProps: "user" | "task" | "discordConnection" | "discordChannel" | "reminderSchedule" | "postLog" | "sharedChannel" | "sharedChannelMember" | "sharedChannelPostLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +856,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SharedChannel: {
+      payload: Prisma.$SharedChannelPayload<ExtArgs>
+      fields: Prisma.SharedChannelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SharedChannelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SharedChannelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        findFirst: {
+          args: Prisma.SharedChannelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SharedChannelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        findMany: {
+          args: Prisma.SharedChannelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>[]
+        }
+        create: {
+          args: Prisma.SharedChannelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        createMany: {
+          args: Prisma.SharedChannelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SharedChannelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>[]
+        }
+        delete: {
+          args: Prisma.SharedChannelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        update: {
+          args: Prisma.SharedChannelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        deleteMany: {
+          args: Prisma.SharedChannelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SharedChannelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SharedChannelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>[]
+        }
+        upsert: {
+          args: Prisma.SharedChannelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPayload>
+        }
+        aggregate: {
+          args: Prisma.SharedChannelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSharedChannel>
+        }
+        groupBy: {
+          args: Prisma.SharedChannelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SharedChannelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelCountAggregateOutputType> | number
+        }
+      }
+    }
+    SharedChannelMember: {
+      payload: Prisma.$SharedChannelMemberPayload<ExtArgs>
+      fields: Prisma.SharedChannelMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SharedChannelMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SharedChannelMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.SharedChannelMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SharedChannelMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        findMany: {
+          args: Prisma.SharedChannelMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>[]
+        }
+        create: {
+          args: Prisma.SharedChannelMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        createMany: {
+          args: Prisma.SharedChannelMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SharedChannelMemberCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>[]
+        }
+        delete: {
+          args: Prisma.SharedChannelMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        update: {
+          args: Prisma.SharedChannelMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.SharedChannelMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SharedChannelMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SharedChannelMemberUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>[]
+        }
+        upsert: {
+          args: Prisma.SharedChannelMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.SharedChannelMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSharedChannelMember>
+        }
+        groupBy: {
+          args: Prisma.SharedChannelMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SharedChannelMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    SharedChannelPostLog: {
+      payload: Prisma.$SharedChannelPostLogPayload<ExtArgs>
+      fields: Prisma.SharedChannelPostLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SharedChannelPostLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SharedChannelPostLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SharedChannelPostLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SharedChannelPostLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        findMany: {
+          args: Prisma.SharedChannelPostLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>[]
+        }
+        create: {
+          args: Prisma.SharedChannelPostLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        createMany: {
+          args: Prisma.SharedChannelPostLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SharedChannelPostLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SharedChannelPostLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        update: {
+          args: Prisma.SharedChannelPostLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SharedChannelPostLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SharedChannelPostLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SharedChannelPostLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SharedChannelPostLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SharedChannelPostLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SharedChannelPostLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSharedChannelPostLog>
+        }
+        groupBy: {
+          args: Prisma.SharedChannelPostLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelPostLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SharedChannelPostLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SharedChannelPostLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -985,6 +1210,53 @@ export const PostLogScalarFieldEnum = {
 } as const
 
 export type PostLogScalarFieldEnum = (typeof PostLogScalarFieldEnum)[keyof typeof PostLogScalarFieldEnum]
+
+
+export const SharedChannelScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  connectionId: 'connectionId',
+  channelId: 'channelId',
+  channelName: 'channelName',
+  joinCode: 'joinCode',
+  enabled: 'enabled',
+  postGoals: 'postGoals',
+  postUpdates: 'postUpdates',
+  maxMembers: 'maxMembers',
+  webhookId: 'webhookId',
+  webhookToken: 'webhookToken',
+  lastError: 'lastError',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SharedChannelScalarFieldEnum = (typeof SharedChannelScalarFieldEnum)[keyof typeof SharedChannelScalarFieldEnum]
+
+
+export const SharedChannelMemberScalarFieldEnum = {
+  id: 'id',
+  sharedChannelId: 'sharedChannelId',
+  userId: 'userId',
+  enabled: 'enabled',
+  createdAt: 'createdAt'
+} as const
+
+export type SharedChannelMemberScalarFieldEnum = (typeof SharedChannelMemberScalarFieldEnum)[keyof typeof SharedChannelMemberScalarFieldEnum]
+
+
+export const SharedChannelPostLogScalarFieldEnum = {
+  id: 'id',
+  sharedChannelId: 'sharedChannelId',
+  userId: 'userId',
+  date: 'date',
+  postedAt: 'postedAt',
+  kind: 'kind',
+  status: 'status',
+  errorCode: 'errorCode',
+  errorMessage: 'errorMessage'
+} as const
+
+export type SharedChannelPostLogScalarFieldEnum = (typeof SharedChannelPostLogScalarFieldEnum)[keyof typeof SharedChannelPostLogScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1209,6 +1481,9 @@ export type GlobalOmitConfig = {
   discordChannel?: Prisma.DiscordChannelOmit
   reminderSchedule?: Prisma.ReminderScheduleOmit
   postLog?: Prisma.PostLogOmit
+  sharedChannel?: Prisma.SharedChannelOmit
+  sharedChannelMember?: Prisma.SharedChannelMemberOmit
+  sharedChannelPostLog?: Prisma.SharedChannelPostLogOmit
 }
 
 /* Types for Logging */
